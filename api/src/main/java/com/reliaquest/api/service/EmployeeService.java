@@ -5,6 +5,7 @@ import com.reliaquest.api.exception.NotFoundException;
 import com.reliaquest.api.exception.RateLimitException;
 import com.reliaquest.api.exception.ServiceException;
 import com.reliaquest.api.model.*;
+import com.reliaquest.api.validator.EmployeeRequestBeanValidator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -21,6 +22,9 @@ public class EmployeeService implements IEmployeeService {
 
     @Autowired
     private IEmpolyeeClient employeeClient;
+
+    @Autowired
+    private EmployeeRequestBeanValidator employeeRequestBeanValidator;
 
     @Override
     public ResponseEntity<List<EmployeeResponseBean>> getAllEmployees() throws ServiceException, RateLimitException {
@@ -100,6 +104,11 @@ public class EmployeeService implements IEmployeeService {
     public ResponseEntity<EmployeeResponseBean> createEmployee(EmployeeRequestBean employeeRequestBean)
             throws ServiceException, RateLimitException {
         log.info("createEmployee method execution started");
+        List<String> errorCodes = new ArrayList<>();
+        Boolean isRequestValid = employeeRequestBeanValidator.validate(employeeRequestBean, errorCodes);
+        if (!isRequestValid) {
+            throw new ServiceException(errorCodes);
+        }
         EmployeeResponseBean employeeResponseBean =
                 employeeClient.createEmployee(getCreateEmployeeEntity(employeeRequestBean));
         if (Objects.isNull(employeeResponseBean)) {
