@@ -1,5 +1,8 @@
 package com.reliaquest.api.controller;
 
+import com.reliaquest.api.exception.NotFoundException;
+import com.reliaquest.api.exception.RateLimitException;
+import com.reliaquest.api.exception.ServiceException;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,23 +24,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface IEmployeeController<Entity, Input> {
 
     @GetMapping()
-    ResponseEntity<List<Entity>> getAllEmployees();
+    ResponseEntity<List<Entity>> getAllEmployees() throws ServiceException, RateLimitException;
 
     @GetMapping("/search/{searchString}")
-    ResponseEntity<List<Entity>> getEmployeesByNameSearch(@PathVariable String searchString);
+    ResponseEntity<List<Entity>> getEmployeesByNameSearch(@PathVariable String searchString)
+            throws ServiceException, RateLimitException, NotFoundException;
 
     @GetMapping("/{id}")
-    ResponseEntity<Entity> getEmployeeById(@PathVariable String id);
+    ResponseEntity<Entity> getEmployeeById(@PathVariable String id)
+            throws ServiceException, RateLimitException, NotFoundException;
 
     @GetMapping("/highestSalary")
-    ResponseEntity<Integer> getHighestSalaryOfEmployees();
+    ResponseEntity<Integer> getHighestSalaryOfEmployees() throws ServiceException, RateLimitException;
 
     @GetMapping("/topTenHighestEarningEmployeeNames")
-    ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames();
+    ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames() throws ServiceException, RateLimitException;
 
     @PostMapping()
-    ResponseEntity<Entity> createEmployee(@RequestBody Input employeeInput);
+    ResponseEntity<Entity> createEmployee(@RequestBody Input employeeInput) throws ServiceException, RateLimitException;
 
     @DeleteMapping("/{id}")
-    ResponseEntity<String> deleteEmployeeById(@PathVariable String id);
+    ResponseEntity<String> deleteEmployeeById(@PathVariable String id)
+            throws ServiceException, RateLimitException, NotFoundException;
 }
